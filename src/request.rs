@@ -21,37 +21,62 @@ impl TryFrom<&str> for Request {
     type Error = HttpError;
 
     fn try_from(mut src: &str) -> Result<Self, Self::Error> {
-        let (method, path_and_query, version) = if let Some(index) = src.find("\r\n") {
-            let first_line_split = src.split_at(index);
+        let method = if let Some(index) = src.find(" ") {
+            let method_split = src.split_at(index);
 
-            src = &first_line_split.1[2..];
+            src = &method_split.1[1..];
 
-            let mut method_uri_version_split = first_line_split.0.split(" ");
-
-            if method_uri_version_split.clone().count() == 3 {
-                (
-                    method_uri_version_split.nth(0).unwrap().try_into()?,
-                    method_uri_version_split.nth(0).unwrap(),
-                    method_uri_version_split.nth(0).unwrap().try_into()?,
-                )
-            } else {
-                return Err(HttpError::InvalidRequest);
-            }
+            method_split.0.try_into()?
         } else {
-            return Err(HttpError::InvalidRequest);
+            return Err(HttpError::Exhausted);            
         };
 
-        let mut headers_split = src.split("\r\n\r\n");
+        let path_and_query = if let Some(index) = src.find(" ") {
+            let path_and_query_split = src.split_at(index);
 
-        let headers: Headers = if headers_split.clone().count() == 2 {
-            src = headers_split.clone().nth(1).unwrap();
+            src = &path_and_query_split.1[1..];
 
-            headers_split.nth(0).unwrap().try_into()?
+            path_and_query_split.0
         } else {
-            return Err(HttpError::InvalidRequest);
+            return Err(HttpError::Exhausted);            
+        };
+
+        let version = if let Some(index) = src.find("\r\n") {
+            let version_split = src.split_at(index);
+
+            src = &version_split.1[2..];
+
+            version_split.0.try_into()?
+        } else {
+            return Err(HttpError::Exhausted);            
+        };
+
+        let headers: Headers = if let Some(index) = src.find("\r\n\r\n") {
+            let header_split = src.split_at(index);
+
+            src = &header_split.1[4..];
+
+            header_split.0.try_into()?
+        } else {
+            return Err(HttpError::Exhausted);
+        };
+
+        let content_length = if let Some(content_length) = headers.headers.get("Content-Length") {
+            match content_length.parse::<u32>() {
+                Ok(content_length) => content_length,
+                Err(_) => return Err(HttpError::InvalidRequest),
+            }
+        } else {
+            0
         };
 
         let body = src.to_string();
+
+        if (body.len() as u32) < content_length {
+            return Err(HttpError::Exhausted);
+        } else if (body.len() as u32) > content_length {
+            return Err(HttpError::InvalidRequest);
+        }
 
         let uri = if let Some(host_header) = headers.headers.get("Host") {
             (host_header.clone() + path_and_query).as_str().try_into()?
@@ -245,7 +270,27 @@ mod tests {
     }
 
     #[test]
-    fn from_str_invalid_request_test() {
+    fn from_str_invalid_request1_test() {
+        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBody "), Err(HttpError::InvalidRequest));
+    }
+
+    #[test]
+    fn from_str_invalid_request2_test() {
         assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nContent-Length: 4\r\n\r\nBody"), Err(HttpError::InvalidRequest));
+    }
+
+    #[test]
+    fn from_str_exhausted1_test() {
+        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBod"), Err(HttpError::Exhausted));
+    }
+
+    #[test]
+    fn from_str_exhausted2_test() {
+        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4"), Err(HttpError::Exhausted));
+    }
+
+    #[test]
+    fn from_str_exhausted3_test() {
+        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com"), Err(HttpError::Exhausted));
     }
 }

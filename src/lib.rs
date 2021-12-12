@@ -1,3 +1,5 @@
+#![no_std]
+
 pub mod method;
 pub mod error;
 pub mod request;

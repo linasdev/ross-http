@@ -1,6 +1,7 @@
 extern crate alloc;
 
 use core::convert::{TryFrom, From};
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 
 use crate::error::HttpError;

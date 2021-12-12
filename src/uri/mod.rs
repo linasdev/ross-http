@@ -2,6 +2,7 @@ extern crate alloc;
 
 use core::convert::{TryFrom, From};
 use alloc::vec::Vec;
+use alloc::vec;
 use core::convert::TryInto;
 
 use crate::uri::scheme::Scheme;
@@ -101,6 +102,7 @@ mod tests {
     use super::*;
 
     use alloc::collections::BTreeMap;
+    use alloc::string::ToString;
 
     #[test]
     fn from_str_full_test() {

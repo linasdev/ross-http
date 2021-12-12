@@ -1,7 +1,9 @@
 extern crate alloc;
 
 use core::convert::{TryFrom, From};
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
+use alloc::vec;
 use alloc::collections::BTreeMap;
 
 use crate::error::HttpError;

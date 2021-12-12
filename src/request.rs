@@ -1,6 +1,9 @@
 extern crate alloc;
 
 use core::convert::{TryFrom, From, TryInto};
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
+use alloc::vec;
 
 use crate::method::Method;
 use crate::uri::Uri;

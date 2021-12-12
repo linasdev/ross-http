@@ -11,6 +11,7 @@ pub struct Authority<'a> {
     pub password: Option<&'a str>,
     pub host: &'a str,
     pub port: Option<&'a str>,
+    pub host_and_port: &'a str,
 }
 
 impl<'a> TryFrom<&'a str> for Authority<'a> {
@@ -37,6 +38,8 @@ impl<'a> TryFrom<&'a str> for Authority<'a> {
             return Err(HttpError::InvalidAuthority);
         };
 
+        let host_and_port = src;
+
         let mut port_split = src.split(":");
 
         let port = if port_split.clone().count() == 2 {
@@ -55,6 +58,7 @@ impl<'a> TryFrom<&'a str> for Authority<'a> {
             password,
             host,
             port,
+            host_and_port,
         })
     }
 }
@@ -95,11 +99,13 @@ mod tests {
         let password = Some("password");
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Authority::try_from("username:password@example.com:123"), Ok(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }));
     }
 
@@ -109,11 +115,13 @@ mod tests {
         let password = Some("password");
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Vec::<u8>::from(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }), b"username:password@example.com:123".to_vec());
     }
 
@@ -123,11 +131,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Authority::try_from("username@example.com:123"), Ok(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }));
     }
 
@@ -137,11 +147,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Vec::<u8>::from(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }), b"username@example.com:123".to_vec());
     }
 
@@ -151,11 +163,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Authority::try_from("example.com:123"), Ok(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }));
     }
 
@@ -165,11 +179,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = Some("123");
+        let host_and_port = "example.com:123";
         assert_eq!(Vec::<u8>::from(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }), b"example.com:123".to_vec());
     }
 
@@ -179,11 +195,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = None;
+        let host_and_port = "example.com";
         assert_eq!(Authority::try_from("example.com"), Ok(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }));
     }
 
@@ -193,11 +211,13 @@ mod tests {
         let password = None;
         let host = "example.com";
         let port = None;
+        let host_and_port = "example.com";
         assert_eq!(Vec::<u8>::from(Authority {
             username,
             password,
             host,
             port,
+            host_and_port,
         }), b"example.com".to_vec());
     }
 

@@ -113,6 +113,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = Some(Path { src: "/resource/subresource" });
         let query = Some(Query { parameters });
@@ -136,6 +137,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = Some(Path { src: "/resource/subresource" });
         let query = Some(Query { parameters });
@@ -159,6 +161,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = None;
         let query = Some(Query { parameters });
@@ -182,6 +185,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = None;
         let query = Some(Query { parameters });
@@ -201,6 +205,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = None;
         let query = None;
@@ -220,6 +225,7 @@ mod tests {
             password: Some("password"),
             host: "example.com",
             port: Some("123"),
+            host_and_port: "example.com:123",
         };
         let path = None;
         let query = None;

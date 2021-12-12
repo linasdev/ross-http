@@ -1,10 +1,10 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From};
 use alloc::collections::BTreeMap;
 use alloc::string::{String, ToString};
-use alloc::vec::Vec;
 use alloc::vec;
+use alloc::vec::Vec;
+use core::convert::{From, TryFrom};
 
 use crate::error::HttpError;
 
@@ -64,14 +64,20 @@ mod tests {
     fn from_str_headers_single_test() {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name".to_string(), "Header-Value".to_string());
-        assert_eq!(Headers::try_from("Header-Name: Header-Value"), Ok(Headers { headers }));
+        assert_eq!(
+            Headers::try_from("Header-Name: Header-Value"),
+            Ok(Headers { headers })
+        );
     }
 
     #[test]
     fn to_bytes_headers_single_test() {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name".to_string(), "Header-Value".to_string());
-        assert_eq!(Vec::<u8>::from(Headers { headers }), b"Header-Name: Header-Value".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Headers { headers }),
+            b"Header-Name: Header-Value".to_vec()
+        );
     }
 
     #[test]
@@ -79,7 +85,10 @@ mod tests {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name1".to_string(), "Header-Value1".to_string());
         headers.insert("Header-Name2".to_string(), "Header-Value2".to_string());
-        assert_eq!(Headers::try_from("Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2"), Ok(Headers { headers }));
+        assert_eq!(
+            Headers::try_from("Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2"),
+            Ok(Headers { headers })
+        );
     }
 
     #[test]
@@ -87,11 +96,17 @@ mod tests {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name1".to_string(), "Header-Value1".to_string());
         headers.insert("Header-Name2".to_string(), "Header-Value2".to_string());
-        assert_eq!(Vec::<u8>::from(Headers { headers }), b"Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Headers { headers }),
+            b"Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2".to_vec()
+        );
     }
 
     #[test]
     fn from_str_invalid_header_test() {
-        assert_eq!(Headers::try_from("Header-Name Header-Value"), Err(HttpError::InvalidHeader));
+        assert_eq!(
+            Headers::try_from("Header-Name Header-Value"),
+            Err(HttpError::InvalidHeader)
+        );
     }
 }

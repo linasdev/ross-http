@@ -1,20 +1,20 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From};
-use alloc::vec::Vec;
 use alloc::vec;
+use alloc::vec::Vec;
 use core::convert::TryInto;
+use core::convert::{From, TryFrom};
 
-use crate::uri::scheme::Scheme;
+use crate::error::HttpError;
 use crate::uri::authority::Authority;
 use crate::uri::path::Path;
 use crate::uri::query::Query;
-use crate::error::HttpError;
+use crate::uri::scheme::Scheme;
 
-pub mod scheme;
 pub mod authority;
 pub mod path;
 pub mod query;
+pub mod scheme;
 
 #[derive(Debug, PartialEq)]
 pub struct Uri {
@@ -117,7 +117,9 @@ mod tests {
             host: "example.com".to_string(),
             port: Some("123".to_string()),
         };
-        let path = Some(Path { src: "/resource/subresource".to_string() });
+        let path = Some(Path {
+            src: "/resource/subresource".to_string(),
+        });
         let query = Some(Query { parameters });
         assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2"), Ok(Uri {
             scheme,
@@ -140,7 +142,9 @@ mod tests {
             host: "example.com".to_string(),
             port: Some("123".to_string()),
         };
-        let path = Some(Path { src: "/resource/subresource".to_string() });
+        let path = Some(Path {
+            src: "/resource/subresource".to_string(),
+        });
         let query = Some(Query { parameters });
         assert_eq!(Vec::<u8>::from(Uri {
             scheme,
@@ -165,12 +169,17 @@ mod tests {
         };
         let path = None;
         let query = Some(Query { parameters });
-        assert_eq!(Uri::try_from("https://username:password@example.com:123?parameter1=value1&parameter2=value2"), Ok(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }));
+        assert_eq!(
+            Uri::try_from(
+                "https://username:password@example.com:123?parameter1=value1&parameter2=value2"
+            ),
+            Ok(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            })
+        );
     }
 
     #[test]
@@ -188,12 +197,16 @@ mod tests {
         };
         let path = None;
         let query = Some(Query { parameters });
-        assert_eq!(Vec::<u8>::from(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }), b"https://username:password@example.com:123?parameter1=value1&parameter2=value2".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            }),
+            b"https://username:password@example.com:123?parameter1=value1&parameter2=value2"
+                .to_vec()
+        );
     }
 
     #[test]
@@ -207,12 +220,15 @@ mod tests {
         };
         let path = None;
         let query = None;
-        assert_eq!(Uri::try_from("https://username:password@example.com:123"), Ok(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }));
+        assert_eq!(
+            Uri::try_from("https://username:password@example.com:123"),
+            Ok(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            })
+        );
     }
 
     #[test]
@@ -226,12 +242,15 @@ mod tests {
         };
         let path = None;
         let query = None;
-        assert_eq!(Vec::<u8>::from(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }), b"https://username:password@example.com:123".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            }),
+            b"https://username:password@example.com:123".to_vec()
+        );
     }
 
     #[test]
@@ -245,12 +264,15 @@ mod tests {
         };
         let path = None;
         let query = None;
-        assert_eq!(Uri::try_from("username:password@example.com:123"), Ok(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }));
+        assert_eq!(
+            Uri::try_from("username:password@example.com:123"),
+            Ok(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            })
+        );
     }
 
     #[test]
@@ -264,12 +286,15 @@ mod tests {
         };
         let path = None;
         let query = None;
-        assert_eq!(Vec::<u8>::from(Uri {
-            scheme,
-            authority,
-            path,
-            query,
-        }), b"username:password@example.com:123".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Uri {
+                scheme,
+                authority,
+                path,
+                query,
+            }),
+            b"username:password@example.com:123".to_vec()
+        );
     }
 
     #[test]

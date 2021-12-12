@@ -1,10 +1,10 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From};
-use alloc::string::{String, ToString};
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::collections::BTreeMap;
+use alloc::string::{String, ToString};
+use alloc::vec;
+use alloc::vec::Vec;
+use core::convert::{From, TryFrom};
 
 use crate::error::HttpError;
 
@@ -26,7 +26,10 @@ impl TryFrom<&str> for Query {
                 return Err(HttpError::InvalidQuery);
             }
 
-            parameters.insert(parameter_parts[0].to_string(), parameter_parts[1].to_string());
+            parameters.insert(
+                parameter_parts[0].to_string(),
+                parameter_parts[1].to_string(),
+            );
         }
 
         Ok(Self { parameters })
@@ -71,7 +74,10 @@ mod tests {
     fn to_bytes_single_test() {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter".to_string(), "value".to_string());
-        assert_eq!(Vec::<u8>::from(Query { parameters }), b"parameter=value".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Query { parameters }),
+            b"parameter=value".to_vec()
+        );
     }
 
     #[test]
@@ -79,7 +85,10 @@ mod tests {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
-        assert_eq!(Query::try_from("parameter1=value1&parameter2=value2"), Ok(Query { parameters }));
+        assert_eq!(
+            Query::try_from("parameter1=value1&parameter2=value2"),
+            Ok(Query { parameters })
+        );
     }
 
     #[test]
@@ -87,6 +96,9 @@ mod tests {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
-        assert_eq!(Vec::<u8>::from(Query { parameters }), b"parameter1=value1&parameter2=value2".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Query { parameters }),
+            b"parameter1=value1&parameter2=value2".to_vec()
+        );
     }
 }

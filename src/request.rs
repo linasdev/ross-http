@@ -1,15 +1,15 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From, TryInto};
 use alloc::string::{String, ToString};
-use alloc::vec::Vec;
 use alloc::vec;
+use alloc::vec::Vec;
+use core::convert::{From, TryFrom, TryInto};
 
+use crate::error::HttpError;
+use crate::headers::Headers;
 use crate::method::Method;
 use crate::uri::Uri;
 use crate::version::Version;
-use crate::headers::Headers;
-use crate::error::HttpError;
 
 #[derive(Debug, PartialEq)]
 pub struct Request {
@@ -31,7 +31,7 @@ impl TryFrom<&str> for Request {
 
             method_split.0.try_into()?
         } else {
-            return Err(HttpError::Exhausted);            
+            return Err(HttpError::Exhausted);
         };
 
         let path_and_query = if let Some(index) = src.find(" ") {
@@ -41,7 +41,7 @@ impl TryFrom<&str> for Request {
 
             path_and_query_split.0
         } else {
-            return Err(HttpError::Exhausted);            
+            return Err(HttpError::Exhausted);
         };
 
         let version = if let Some(index) = src.find("\r\n") {
@@ -51,7 +51,7 @@ impl TryFrom<&str> for Request {
 
             version_split.0.try_into()?
         } else {
-            return Err(HttpError::Exhausted);            
+            return Err(HttpError::Exhausted);
         };
 
         let headers: Headers = if let Some(index) = src.find("\r\n\r\n") {
@@ -108,9 +108,15 @@ impl From<Request> for Vec<u8> {
             host_and_port += port.as_str();
         }
 
-        request.headers.headers.insert("Host".to_string(), host_and_port);
+        request
+            .headers
+            .headers
+            .insert("Host".to_string(), host_and_port);
         if request.body.len() > 0 {
-            request.headers.headers.insert("Content-Length".to_string(), request.body.len().to_string());
+            request
+                .headers
+                .headers
+                .insert("Content-Length".to_string(), request.body.len().to_string());
         }
 
         data.append(&mut request.method.into());
@@ -161,22 +167,25 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string()
+                src: "/resource".to_string(),
             }),
             query: None,
         };
         let version = Version::Http11;
-        let headers = Headers {
-            headers,
-        };
+        let headers = Headers { headers };
         let body = "Body".to_string();
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"), Ok(Request {
-            method,
-            uri,
-            version,
-            headers,
-            body,
-        }));
+        assert_eq!(
+            Request::try_from(
+                "POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"
+            ),
+            Ok(Request {
+                method,
+                uri,
+                version,
+                headers,
+                body,
+            })
+        );
     }
 
     #[test]
@@ -191,7 +200,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string()
+                src: "/resource".to_string(),
             }),
             query: None,
         };
@@ -200,13 +209,17 @@ mod tests {
             headers: BTreeMap::new(),
         };
         let body = "Body".to_string();
-        assert_eq!(Vec::<u8>::from(Request {
-            method,
-            uri,
-            version,
-            headers,
-            body,
-        }), b"POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Request {
+                method,
+                uri,
+                version,
+                headers,
+                body,
+            }),
+            b"POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"
+                .to_vec()
+        );
     }
 
     #[test]
@@ -224,22 +237,23 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string()
+                src: "/resource".to_string(),
             }),
             query: None,
         };
         let version = Version::Http11;
-        let headers = Headers {
-            headers,
-        };
+        let headers = Headers { headers };
         let body = "".to_string();
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n"), Ok(Request {
-            method,
-            uri,
-            version,
-            headers,
-            body,
-        }));
+        assert_eq!(
+            Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n"),
+            Ok(Request {
+                method,
+                uri,
+                version,
+                headers,
+                body,
+            })
+        );
     }
 
     #[test]
@@ -254,7 +268,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string()
+                src: "/resource".to_string(),
             }),
             query: None,
         };
@@ -263,37 +277,59 @@ mod tests {
             headers: BTreeMap::new(),
         };
         let body = "".to_string();
-        assert_eq!(Vec::<u8>::from(Request {
-            method,
-            uri,
-            version,
-            headers,
-            body,
-        }), b"POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Request {
+                method,
+                uri,
+                version,
+                headers,
+                body,
+            }),
+            b"POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n".to_vec()
+        );
     }
 
     #[test]
     fn from_str_invalid_request1_test() {
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBody "), Err(HttpError::InvalidRequest));
+        assert_eq!(
+            Request::try_from(
+                "POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBody "
+            ),
+            Err(HttpError::InvalidRequest)
+        );
     }
 
     #[test]
     fn from_str_invalid_request2_test() {
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nContent-Length: 4\r\n\r\nBody"), Err(HttpError::InvalidRequest));
+        assert_eq!(
+            Request::try_from("POST /resource HTTP/1.1\r\nContent-Length: 4\r\n\r\nBody"),
+            Err(HttpError::InvalidRequest)
+        );
     }
 
     #[test]
     fn from_str_exhausted1_test() {
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBod"), Err(HttpError::Exhausted));
+        assert_eq!(
+            Request::try_from(
+                "POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nBod"
+            ),
+            Err(HttpError::Exhausted)
+        );
     }
 
     #[test]
     fn from_str_exhausted2_test() {
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4"), Err(HttpError::Exhausted));
+        assert_eq!(
+            Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com\r\nContent-Length: 4"),
+            Err(HttpError::Exhausted)
+        );
     }
 
     #[test]
     fn from_str_exhausted3_test() {
-        assert_eq!(Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com"), Err(HttpError::Exhausted));
+        assert_eq!(
+            Request::try_from("POST /resource HTTP/1.1\r\nHost: example.com"),
+            Err(HttpError::Exhausted)
+        );
     }
 }

@@ -1,8 +1,8 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From};
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
+use core::convert::{From, TryFrom};
 
 use crate::error::HttpError;
 
@@ -15,7 +15,9 @@ impl TryFrom<&str> for Path {
     type Error = HttpError;
 
     fn try_from(src: &str) -> Result<Self, Self::Error> {
-        Ok(Self { src: src.to_string() })
+        Ok(Self {
+            src: src.to_string(),
+        })
     }
 }
 
@@ -31,11 +33,21 @@ mod tests {
 
     #[test]
     fn from_str_test() {
-        assert_eq!(Path::try_from("/resource/subresource"), Ok(Path { src: "/resource/subresource".to_string() }));
+        assert_eq!(
+            Path::try_from("/resource/subresource"),
+            Ok(Path {
+                src: "/resource/subresource".to_string()
+            })
+        );
     }
 
     #[test]
     fn to_bytes_test() {
-        assert_eq!(Vec::<u8>::from(Path { src: "/resource/subresource".to_string() }), b"/resource/subresource".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Path {
+                src: "/resource/subresource".to_string()
+            }),
+            b"/resource/subresource".to_vec()
+        );
     }
 }

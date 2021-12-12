@@ -1,9 +1,9 @@
 extern crate alloc;
 
-use core::convert::{TryFrom, From};
 use alloc::string::{String, ToString};
-use alloc::vec::Vec;
 use alloc::vec;
+use alloc::vec::Vec;
+use core::convert::{From, TryFrom};
 
 use crate::error::HttpError;
 
@@ -27,7 +27,10 @@ impl TryFrom<&str> for Authority {
             let mut username_split = username_password_split.nth(0).unwrap().split(":");
 
             if username_split.clone().count() == 2 {
-                (Some(username_split.nth(0).unwrap().to_string()), Some(username_split.nth(0).unwrap().to_string()))
+                (
+                    Some(username_split.nth(0).unwrap().to_string()),
+                    Some(username_split.nth(0).unwrap().to_string()),
+                )
             } else if username_split.clone().count() == 1 {
                 (Some(username_split.nth(0).unwrap().to_string()), None)
             } else {
@@ -97,12 +100,15 @@ mod tests {
         let password = Some("password".to_string());
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Authority::try_from("username:password@example.com:123"), Ok(Authority {
-            username,
-            password,
-            host,
-            port,
-        }));
+        assert_eq!(
+            Authority::try_from("username:password@example.com:123"),
+            Ok(Authority {
+                username,
+                password,
+                host,
+                port,
+            })
+        );
     }
 
     #[test]
@@ -111,12 +117,15 @@ mod tests {
         let password = Some("password".to_string());
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Vec::<u8>::from(Authority {
-            username,
-            password,
-            host,
-            port,
-        }), b"username:password@example.com:123".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Authority {
+                username,
+                password,
+                host,
+                port,
+            }),
+            b"username:password@example.com:123".to_vec()
+        );
     }
 
     #[test]
@@ -125,12 +134,15 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Authority::try_from("username@example.com:123"), Ok(Authority {
-            username,
-            password,
-            host,
-            port,
-        }));
+        assert_eq!(
+            Authority::try_from("username@example.com:123"),
+            Ok(Authority {
+                username,
+                password,
+                host,
+                port,
+            })
+        );
     }
 
     #[test]
@@ -139,12 +151,15 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Vec::<u8>::from(Authority {
-            username,
-            password,
-            host,
-            port,
-        }), b"username@example.com:123".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Authority {
+                username,
+                password,
+                host,
+                port,
+            }),
+            b"username@example.com:123".to_vec()
+        );
     }
 
     #[test]
@@ -153,12 +168,15 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Authority::try_from("example.com:123"), Ok(Authority {
-            username,
-            password,
-            host,
-            port,
-        }));
+        assert_eq!(
+            Authority::try_from("example.com:123"),
+            Ok(Authority {
+                username,
+                password,
+                host,
+                port,
+            })
+        );
     }
 
     #[test]
@@ -167,12 +185,15 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
-        assert_eq!(Vec::<u8>::from(Authority {
-            username,
-            password,
-            host,
-            port,
-        }), b"example.com:123".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Authority {
+                username,
+                password,
+                host,
+                port,
+            }),
+            b"example.com:123".to_vec()
+        );
     }
 
     #[test]
@@ -181,12 +202,15 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = None;
-        assert_eq!(Authority::try_from("example.com"), Ok(Authority {
-            username,
-            password,
-            host,
-            port,
-        }));
+        assert_eq!(
+            Authority::try_from("example.com"),
+            Ok(Authority {
+                username,
+                password,
+                host,
+                port,
+            })
+        );
     }
 
     #[test]
@@ -195,16 +219,22 @@ mod tests {
         let password = None;
         let host = "example.com".to_string();
         let port = None;
-        assert_eq!(Vec::<u8>::from(Authority {
-            username,
-            password,
-            host,
-            port,
-        }), b"example.com".to_vec());
+        assert_eq!(
+            Vec::<u8>::from(Authority {
+                username,
+                password,
+                host,
+                port,
+            }),
+            b"example.com".to_vec()
+        );
     }
 
     #[test]
     fn from_str_invalid_authority_test() {
-        assert_eq!(Authority::try_from("username@password@example.com:123"), Err(HttpError::InvalidAuthority));
+        assert_eq!(
+            Authority::try_from("username@password@example.com:123"),
+            Err(HttpError::InvalidAuthority)
+        );
     }
 }

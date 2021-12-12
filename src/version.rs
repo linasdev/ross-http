@@ -1,7 +1,7 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
-use core::convert::{TryFrom, From};
+use core::convert::{From, TryFrom};
 
 use crate::error::HttpError;
 
@@ -97,6 +97,9 @@ mod tests {
 
     #[test]
     fn from_str_invalid_version_test() {
-        assert_eq!(Version::try_from("HTTP/3.1"), Err(HttpError::InvalidVersion));
+        assert_eq!(
+            Version::try_from("HTTP/3.1"),
+            Err(HttpError::InvalidVersion)
+        );
     }
 }

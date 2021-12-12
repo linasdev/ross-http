@@ -17,7 +17,7 @@ pub mod query;
 
 #[derive(Debug, PartialEq)]
 pub struct Uri {
-    pub scheme: Scheme,
+    pub scheme: Option<Scheme>,
     pub authority: Authority,
     pub path: Option<Path>,
     pub query: Option<Query>,
@@ -29,14 +29,13 @@ impl TryFrom<&str> for Uri {
     fn try_from(mut src: &str) -> Result<Self, Self::Error> {
         let mut scheme_split = src.split("://");
 
-        let scheme = match scheme_split.nth(0) {
-            Some(src) => src.try_into()?,
-            None => return Err(HttpError::InvalidUri),
-        };
-
-        src = match scheme_split.nth(0) {
-            Some(src) => src,
-            None => return Err(HttpError::InvalidUri),
+        let scheme = if scheme_split.clone().count() == 2 {
+            src = scheme_split.clone().nth(1).unwrap();
+            Some(scheme_split.nth(0).unwrap().try_into()?)
+        } else if scheme_split.count() == 1 {
+            None
+        } else {
+            return Err(HttpError::InvalidUri);
         };
 
         let mut query_split = src.split("?");
@@ -80,8 +79,10 @@ impl From<Uri> for Vec<u8> {
     fn from(uri: Uri) -> Self {
         let mut data = vec![];
 
-        data.append(&mut uri.scheme.into());
-        data.append(&mut b"://".to_vec());
+        if let Some(scheme) = uri.scheme {
+            data.append(&mut scheme.into());
+            data.append(&mut b"://".to_vec());
+        }
         data.append(&mut uri.authority.into());
         if let Some(path) = uri.path {
             data.append(&mut path.into());
@@ -107,7 +108,7 @@ mod tests {
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
 
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -130,7 +131,7 @@ mod tests {
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
 
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -153,7 +154,7 @@ mod tests {
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
 
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -176,7 +177,7 @@ mod tests {
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
 
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -195,7 +196,7 @@ mod tests {
 
     #[test]
     fn from_str_no_query_test() {
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -214,7 +215,7 @@ mod tests {
 
     #[test]
     fn to_bytes_no_query_test() {
-        let scheme = Scheme::Https;
+        let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
             password: Some("password".to_string()),
@@ -229,6 +230,44 @@ mod tests {
             path,
             query,
         }), b"https://username:password@example.com:123".to_vec());
+    }
+
+    #[test]
+    fn from_str_no_scheme_test() {
+        let scheme = None;
+        let authority = Authority {
+            username: Some("username".to_string()),
+            password: Some("password".to_string()),
+            host: "example.com".to_string(),
+            port: Some("123".to_string()),
+        };
+        let path = None;
+        let query = None;
+        assert_eq!(Uri::try_from("username:password@example.com:123"), Ok(Uri {
+            scheme,
+            authority,
+            path,
+            query,
+        }));
+    }
+
+    #[test]
+    fn to_bytes_no_scheme_test() {
+        let scheme = None;
+        let authority = Authority {
+            username: Some("username".to_string()),
+            password: Some("password".to_string()),
+            host: "example.com".to_string(),
+            port: Some("123".to_string()),
+        };
+        let path = None;
+        let query = None;
+        assert_eq!(Vec::<u8>::from(Uri {
+            scheme,
+            authority,
+            path,
+            query,
+        }), b"username:password@example.com:123".to_vec());
     }
 
     #[test]

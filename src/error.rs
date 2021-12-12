@@ -2,4 +2,5 @@
 pub enum HttpError {
     InvalidMethod,
     InvalidVersion,
+    InvalidHeader,
 }

@@ -6,20 +6,20 @@ use alloc::vec::Vec;
 use crate::error::HttpError;
 
 #[derive(Debug, PartialEq)]
-pub struct Path<'a> {
-    pub src: &'a str,
+pub struct Path {
+    pub src: String,
 }
 
-impl<'a> TryFrom<&'a str> for Path<'a> {
+impl TryFrom<&str> for Path {
     type Error = HttpError;
 
-    fn try_from(src: &'a str) -> Result<Self, Self::Error> {
-        Ok(Self { src })
+    fn try_from(src: &str) -> Result<Self, Self::Error> {
+        Ok(Self { src: src.to_string() })
     }
 }
 
-impl<'a> From<Path<'a>> for Vec<u8> {
-    fn from(path: Path<'a>) -> Self {
+impl<'a> From<Path> for Vec<u8> {
+    fn from(path: Path) -> Self {
         path.src.as_bytes().to_vec()
     }
 }
@@ -30,11 +30,11 @@ mod tests {
 
     #[test]
     fn from_str_test() {
-        assert_eq!(Path::try_from("/resource/subresource"), Ok(Path { src: "/resource/subresource" }));
+        assert_eq!(Path::try_from("/resource/subresource"), Ok(Path { src: "/resource/subresource".to_string() }));
     }
 
     #[test]
     fn to_bytes_test() {
-        assert_eq!(Vec::<u8>::from(Path { src: "/resource/subresource" }), b"/resource/subresource".to_vec());
+        assert_eq!(Vec::<u8>::from(Path { src: "/resource/subresource".to_string() }), b"/resource/subresource".to_vec());
     }
 }

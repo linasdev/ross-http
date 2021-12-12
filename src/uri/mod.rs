@@ -99,8 +99,14 @@ impl<'a> From<Uri<'a>> for Vec<u8> {
 mod tests {
     use super::*;
 
+    use alloc::collections::BTreeMap;
+
     #[test]
     fn from_str_full_test() {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("parameter1", "value1");
+        parameters.insert("parameter2", "value2");
+
         let scheme = Scheme::Https;
         let authority = Authority {
             username: Some("username"),
@@ -109,8 +115,8 @@ mod tests {
             port: Some("123"),
         };
         let path = Some(Path { src: "/resource/subresource" });
-        let query = Some(Query { src: "parameter1=value2&paramater2=value2" });
-        assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value2&paramater2=value2"), Ok(Uri {
+        let query = Some(Query { parameters });
+        assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2"), Ok(Uri {
             scheme,
             authority,
             path,
@@ -120,6 +126,10 @@ mod tests {
 
     #[test]
     fn to_bytes_full_test() {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("parameter1", "value1");
+        parameters.insert("parameter2", "value2");
+
         let scheme = Scheme::Https;
         let authority = Authority {
             username: Some("username"),
@@ -128,17 +138,21 @@ mod tests {
             port: Some("123"),
         };
         let path = Some(Path { src: "/resource/subresource" });
-        let query = Some(Query { src: "parameter1=value2&paramater2=value2" });
+        let query = Some(Query { parameters });
         assert_eq!(Vec::<u8>::from(Uri {
             scheme,
             authority,
             path,
             query,
-        }), b"https://username:password@example.com:123/resource/subresource?parameter1=value2&paramater2=value2".to_vec());
+        }), b"https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2".to_vec());
     }
 
     #[test]
     fn from_str_no_path_test() {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("parameter1", "value1");
+        parameters.insert("parameter2", "value2");
+
         let scheme = Scheme::Https;
         let authority = Authority {
             username: Some("username"),
@@ -147,8 +161,8 @@ mod tests {
             port: Some("123"),
         };
         let path = None;
-        let query = Some(Query { src: "parameter1=value2&paramater2=value2" });
-        assert_eq!(Uri::try_from("https://username:password@example.com:123?parameter1=value2&paramater2=value2"), Ok(Uri {
+        let query = Some(Query { parameters });
+        assert_eq!(Uri::try_from("https://username:password@example.com:123?parameter1=value1&parameter2=value2"), Ok(Uri {
             scheme,
             authority,
             path,
@@ -158,6 +172,10 @@ mod tests {
 
     #[test]
     fn to_bytes_no_path_test() {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("parameter1", "value1");
+        parameters.insert("parameter2", "value2");
+
         let scheme = Scheme::Https;
         let authority = Authority {
             username: Some("username"),
@@ -166,13 +184,13 @@ mod tests {
             port: Some("123"),
         };
         let path = None;
-        let query = Some(Query { src: "parameter1=value2&paramater2=value2" });
+        let query = Some(Query { parameters });
         assert_eq!(Vec::<u8>::from(Uri {
             scheme,
             authority,
             path,
             query,
-        }), b"https://username:password@example.com:123?parameter1=value2&paramater2=value2".to_vec());
+        }), b"https://username:password@example.com:123?parameter1=value1&parameter2=value2".to_vec());
     }
 
     #[test]
@@ -215,6 +233,6 @@ mod tests {
 
     #[test]
     fn from_str_invalid_uri_test() {
-        assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value2?paramater2=value2"), Err(HttpError::InvalidUri));
+        assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value1?parameter2=value2"), Err(HttpError::InvalidUri));
     }
 }

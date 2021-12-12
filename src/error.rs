@@ -4,6 +4,7 @@ pub enum HttpError {
     InvalidUri,
     InvalidScheme,
     InvalidAuthority,
+    InvalidQuery,
     InvalidVersion,
     InvalidHeader,
 }

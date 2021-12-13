@@ -46,7 +46,9 @@ impl HttpRouter {
 
         for (route, handler) in self.routes.iter_mut() {
             if route.method == request.method
-                && route.path_regex.is_match(request_path.to_string().as_bytes())
+                && route
+                    .path_regex
+                    .is_match(request_path.to_string().as_bytes())
             {
                 return handler(request);
             }

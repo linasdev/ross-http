@@ -10,7 +10,7 @@ use crate::request::Request;
 use crate::response::Response;
 use crate::uri::path::Path;
 
-type RequestHandler = Box<dyn FnMut(Request, Vec<String>) -> Response>;
+type RequestHandler<'a> = Box<dyn FnMut(Request, Vec<String>) -> Response + 'a>;
 
 #[derive(Debug, Clone)]
 pub struct HttpRoute {
@@ -18,20 +18,20 @@ pub struct HttpRoute {
     pub path: Path,
 }
 
-pub struct HttpRouter {
-    routes: Vec<(HttpRoute, RequestHandler)>,
-    not_found_handler: RequestHandler,
+pub struct HttpRouter<'a> {
+    routes: Vec<(HttpRoute, RequestHandler<'a>)>,
+    not_found_handler: RequestHandler<'a>,
 }
 
-impl HttpRouter {
-    pub fn new(not_found_handler: RequestHandler) -> Self {
+impl<'a> HttpRouter<'a> {
+    pub fn new(not_found_handler: RequestHandler<'a>) -> Self {
         Self {
             routes: vec![],
             not_found_handler,
         }
     }
 
-    pub fn add_route(&mut self, route: HttpRoute, handler: RequestHandler) {
+    pub fn add_route(&mut self, route: HttpRoute, handler: RequestHandler<'a>) {
         self.routes.push((route, handler));
     }
 

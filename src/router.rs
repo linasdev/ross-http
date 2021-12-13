@@ -1,8 +1,9 @@
 extern crate alloc;
 
 use alloc::boxed::Box;
-use alloc::collections::BTreeMap;
 use alloc::string::ToString;
+use alloc::vec;
+use alloc::vec::Vec;
 
 use crate::method::Method;
 use crate::request::Request;
@@ -18,20 +19,20 @@ pub struct HttpRoute {
 }
 
 pub struct HttpRouter {
-    routes: BTreeMap<HttpRoute, RequestHandler>,
+    routes: Vec<(HttpRoute, RequestHandler)>,
     not_found_handler: RequestHandler,
 }
 
 impl HttpRouter {
     pub fn new(not_found_handler: RequestHandler) -> Self {
         Self {
-            routes: BTreeMap::new(),
+            routes: vec![],
             not_found_handler,
         }
     }
 
     pub fn add_route(&mut self, route: HttpRoute, handler: RequestHandler) {
-        self.routes.insert(route, handler);
+        self.routes.push((route, handler));
     }
 
     pub fn handle_request(&mut self, request: Request) -> Response {
@@ -43,7 +44,11 @@ impl HttpRouter {
         };
 
         for (route, handler) in self.routes.iter_mut() {
-            if route.method == request.method && route.path == request_path {
+            if route.method == request.method
+                && request_path
+                    .to_string()
+                    .starts_with(route.path.to_string().as_str())
+            {
                 return handler(request);
             }
         }

@@ -38,9 +38,7 @@ impl HttpRouter {
     pub fn handle_request(&mut self, request: Request) -> Response {
         let request_path = match &request.uri.path {
             Some(path) => path.clone(),
-            None => Path {
-                segments: vec![],
-            },
+            None => Path { segments: vec![] },
         };
 
         for (route, handler) in self.routes.iter_mut() {
@@ -54,7 +52,7 @@ impl HttpRouter {
                         None => {
                             matched = false;
                             break;
-                        },
+                        }
                     };
 
                     if *route_segment == "{}".to_string() {

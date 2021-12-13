@@ -1,7 +1,7 @@
 extern crate alloc;
 
-use alloc::vec::Vec;
 use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 use core::convert::TryFrom;
 
 use crate::error::HttpError;
@@ -18,10 +18,8 @@ impl TryFrom<&str> for Path {
         let mut iterator = src.split("/").map(|segment| segment.to_string());
         iterator.next();
         let segments = iterator.collect();
-    
-        Ok(Self {
-            segments,
-        })
+
+        Ok(Self { segments })
     }
 }
 
@@ -75,32 +73,16 @@ mod tests {
 
     #[test]
     fn from_str_empty_test() {
-        assert_eq!(
-            Path::try_from(""),
-            Ok(Path {
-                segments: vec![],
-            })
-        );
+        assert_eq!(Path::try_from(""), Ok(Path { segments: vec![] }));
     }
 
     #[test]
     fn from_str_root_test() {
-        assert_eq!(
-            Path::try_from("/"),
-            Ok(Path {
-                segments: vec![],
-            })
-        );
+        assert_eq!(Path::try_from("/"), Ok(Path { segments: vec![] }));
     }
 
     #[test]
     fn to_string_empty_test() {
-        assert_eq!(
-            Path {
-                segments: vec![],
-            }
-            .to_string(),
-            "/".to_string()
-        );
+        assert_eq!(Path { segments: vec![] }.to_string(), "/".to_string());
     }
 }

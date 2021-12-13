@@ -92,10 +92,9 @@ impl ToString for Response {
         let mut headers = self.headers.clone();
 
         if self.body.len() > 0 {
-            headers.headers.insert(
-                "Content-Length".to_string(),
-                self.body.len().to_string(),
-            );
+            headers
+                .headers
+                .insert("Content-Length".to_string(), self.body.len().to_string());
         }
 
         data += self.version.to_string().as_str();
@@ -154,7 +153,8 @@ mod tests {
                 status,
                 headers,
                 body,
-            }.to_string(),
+            }
+            .to_string(),
             "HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody".to_string()
         );
     }
@@ -192,7 +192,8 @@ mod tests {
                 status,
                 headers,
                 body,
-            }.to_string(),
+            }
+            .to_string(),
             "HTTP/1.1 200 Ok\r\n\r\n".to_string(),
         );
     }

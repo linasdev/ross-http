@@ -121,7 +121,8 @@ mod tests {
                 password,
                 host,
                 port,
-            }.to_string(),
+            }
+            .to_string(),
             "username:password@example.com:123".to_string()
         );
     }
@@ -155,7 +156,8 @@ mod tests {
                 password,
                 host,
                 port,
-            }.to_string(),
+            }
+            .to_string(),
             "username@example.com:123".to_string()
         );
     }
@@ -189,7 +191,8 @@ mod tests {
                 password,
                 host,
                 port,
-            }.to_string(),
+            }
+            .to_string(),
             "example.com:123".to_string()
         );
     }
@@ -223,7 +226,8 @@ mod tests {
                 password,
                 host,
                 port,
-            }.to_string(),
+            }
+            .to_string(),
             "example.com".to_string()
         );
     }

@@ -107,9 +107,7 @@ impl ToString for Request {
             host_and_port += port.as_str();
         }
 
-        headers
-            .headers
-            .insert("Host".to_string(), host_and_port);
+        headers.headers.insert("Host".to_string(), host_and_port);
         if self.body.len() > 0 {
             headers
                 .headers
@@ -212,7 +210,8 @@ mod tests {
                 version,
                 headers,
                 body,
-            }.to_string(),
+            }
+            .to_string(),
             "POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"
                 .to_string()
         );
@@ -280,7 +279,8 @@ mod tests {
                 version,
                 headers,
                 body,
-            }.to_string(),
+            }
+            .to_string(),
             "POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n".to_string()
         );
     }

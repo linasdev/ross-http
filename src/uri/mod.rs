@@ -1,8 +1,8 @@
 extern crate alloc;
 
 use alloc::string::{String, ToString};
-use core::convert::TryInto;
 use core::convert::TryFrom;
+use core::convert::TryInto;
 
 use crate::error::HttpError;
 use crate::uri::authority::Authority;
@@ -202,7 +202,8 @@ mod tests {
                 authority,
                 path,
                 query,
-            }.to_string(),
+            }
+            .to_string(),
             "https://username:password@example.com:123?parameter1=value1&parameter2=value2"
                 .to_string()
         );
@@ -247,7 +248,8 @@ mod tests {
                 authority,
                 path,
                 query,
-            }.to_string(),
+            }
+            .to_string(),
             "https://username:password@example.com:123".to_string()
         );
     }
@@ -291,7 +293,8 @@ mod tests {
                 authority,
                 path,
                 query,
-            }.to_string(),
+            }
+            .to_string(),
             "username:password@example.com:123".to_string()
         );
     }

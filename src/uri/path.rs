@@ -45,7 +45,8 @@ mod tests {
         assert_eq!(
             Path {
                 src: "/resource/subresource".to_string()
-            }.to_string(),
+            }
+            .to_string(),
             "/resource/subresource".to_string()
         );
     }

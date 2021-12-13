@@ -384,7 +384,8 @@ mod tests {
             Status {
                 code: StatusCode::Ok,
                 reason: "Ok".to_string(),
-            }.to_string(),
+            }
+            .to_string(),
             "200 Ok".to_string(),
         );
     }
@@ -406,7 +407,8 @@ mod tests {
             Status {
                 code: StatusCode::NoContent,
                 reason: "No Content".to_string(),
-            }.to_string(),
+            }
+            .to_string(),
             "204 No Content".to_string(),
         );
     }

@@ -1,13 +1,11 @@
 extern crate alloc;
 
 use alloc::string::{String, ToString};
-use alloc::vec;
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Authority {
     pub username: Option<String>,
     pub password: Option<String>,
@@ -64,26 +62,26 @@ impl TryFrom<&str> for Authority {
     }
 }
 
-impl From<Authority> for Vec<u8> {
-    fn from(authority: Authority) -> Self {
-        let mut data = vec![];
+impl ToString for Authority {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        if let Some(username) = authority.username {
-            data.append(&mut username.as_bytes().to_vec());
+        if let Some(username) = &self.username {
+            data += username.as_str();
 
-            if let Some(password) = authority.password {
-                data.append(&mut b":".to_vec());
-                data.append(&mut password.as_bytes().to_vec());
+            if let Some(password) = &self.password {
+                data += ":";
+                data += password.as_str();
             }
 
-            data.append(&mut b"@".to_vec());
+            data += "@";
         }
 
-        data.append(&mut authority.host.as_bytes().to_vec());
+        data += self.host.as_str();
 
-        if let Some(port) = authority.port {
-            data.append(&mut b":".to_vec());
-            data.append(&mut port.as_bytes().to_vec());
+        if let Some(port) = &self.port {
+            data += ":";
+            data += port.as_str();
         }
 
         data
@@ -112,19 +110,19 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_full_test() {
+    fn to_string_full_test() {
         let username = Some("username".to_string());
         let password = Some("password".to_string());
         let host = "example.com".to_string();
         let port = Some("123".to_string());
         assert_eq!(
-            Vec::<u8>::from(Authority {
+            Authority {
                 username,
                 password,
                 host,
                 port,
-            }),
-            b"username:password@example.com:123".to_vec()
+            }.to_string(),
+            "username:password@example.com:123".to_string()
         );
     }
 
@@ -146,19 +144,19 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_password_test() {
+    fn to_string_no_password_test() {
         let username = Some("username".to_string());
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
         assert_eq!(
-            Vec::<u8>::from(Authority {
+            Authority {
                 username,
                 password,
                 host,
                 port,
-            }),
-            b"username@example.com:123".to_vec()
+            }.to_string(),
+            "username@example.com:123".to_string()
         );
     }
 
@@ -180,19 +178,19 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_username_test() {
+    fn to_string_no_username_test() {
         let username = None;
         let password = None;
         let host = "example.com".to_string();
         let port = Some("123".to_string());
         assert_eq!(
-            Vec::<u8>::from(Authority {
+            Authority {
                 username,
                 password,
                 host,
                 port,
-            }),
-            b"example.com:123".to_vec()
+            }.to_string(),
+            "example.com:123".to_string()
         );
     }
 
@@ -214,19 +212,19 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_port_test() {
+    fn to_string_no_port_test() {
         let username = None;
         let password = None;
         let host = "example.com".to_string();
         let port = None;
         assert_eq!(
-            Vec::<u8>::from(Authority {
+            Authority {
                 username,
                 password,
                 host,
                 port,
-            }),
-            b"example.com".to_vec()
+            }.to_string(),
+            "example.com".to_string()
         );
     }
 

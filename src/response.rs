@@ -2,16 +2,14 @@ extern crate alloc;
 
 use alloc::collections::BTreeMap;
 use alloc::string::{String, ToString};
-use alloc::vec;
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom, TryInto};
+use core::convert::{TryFrom, TryInto};
 
 use crate::error::HttpError;
 use crate::headers::Headers;
 use crate::status::Status;
 use crate::version::Version;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Response {
     pub version: Version,
     pub status: Status,
@@ -88,27 +86,27 @@ impl TryFrom<&str> for Response {
     }
 }
 
-impl From<Response> for Vec<u8> {
-    fn from(mut response: Response) -> Self {
-        let mut data = vec![];
+impl ToString for Response {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
+        let mut headers = self.headers.clone();
 
-        if response.body.len() > 0 {
-            response.headers.headers.insert(
+        if self.body.len() > 0 {
+            headers.headers.insert(
                 "Content-Length".to_string(),
-                response.body.len().to_string(),
+                self.body.len().to_string(),
             );
         }
 
-        data.append(&mut response.version.into());
-        data.append(&mut b" ".to_vec());
-        data.append(&mut response.status.into());
-        if response.headers.headers.len() > 0 {
-            data.append(&mut b"\r\n".to_vec());
-            data.append(&mut response.headers.into());
+        data += self.version.to_string().as_str();
+        data += " ";
+        data += self.status.to_string().as_str();
+        if headers.headers.len() > 0 {
+            data += "\r\n";
+            data += headers.to_string().as_str();
         }
-        data.append(&mut b"\r\n".to_vec());
-        data.append(&mut b"\r\n".to_vec());
-        data.append(&mut response.body.into());
+        data += "\r\n\r\n";
+        data += self.body.as_str();
 
         data
     }
@@ -143,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_full_test() {
+    fn to_string_full_test() {
         let version = Version::Http11;
         let status = Status::from(StatusCode::Ok);
         let headers = Headers {
@@ -151,13 +149,13 @@ mod tests {
         };
         let body = "Body".to_string();
         assert_eq!(
-            Vec::<u8>::from(Response {
+            Response {
                 version,
                 status,
                 headers,
                 body,
-            }),
-            b"HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody".to_vec()
+            }.to_string(),
+            "HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody".to_string()
         );
     }
 
@@ -181,7 +179,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_body_test() {
+    fn to_string_no_body_test() {
         let version = Version::Http11;
         let status = Status::from(StatusCode::Ok);
         let headers = Headers {
@@ -189,13 +187,13 @@ mod tests {
         };
         let body = "".to_string();
         assert_eq!(
-            Vec::<u8>::from(Response {
+            Response {
                 version,
                 status,
                 headers,
                 body,
-            }),
-            b"HTTP/1.1 200 Ok\r\n\r\n".to_vec(),
+            }.to_string(),
+            "HTTP/1.1 200 Ok\r\n\r\n".to_string(),
         );
     }
 

@@ -2,13 +2,12 @@ extern crate alloc;
 
 use alloc::collections::BTreeMap;
 use alloc::string::{String, ToString};
-use alloc::vec;
 use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Headers {
     pub headers: BTreeMap<String, String>,
 }
@@ -33,23 +32,23 @@ impl TryFrom<&str> for Headers {
     }
 }
 
-impl From<Headers> for Vec<u8> {
-    fn from(headers: Headers) -> Self {
-        let mut data = vec![];
+impl ToString for Headers {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        let mut iterator = headers.headers.iter();
+        let mut iterator = self.headers.iter();
 
         if let Some((key, value)) = iterator.next() {
-            data.append(&mut key.as_bytes().to_vec());
-            data.append(&mut b": ".to_vec());
-            data.append(&mut value.as_bytes().to_vec());
+            data += key;
+            data += ": ";
+            data += value;
         }
 
         for (key, value) in iterator {
-            data.append(&mut b"\r\n".to_vec());
-            data.append(&mut key.as_bytes().to_vec());
-            data.append(&mut b": ".to_vec());
-            data.append(&mut value.as_bytes().to_vec());
+            data += "\r\n";
+            data += key;
+            data += ": ";
+            data += value;
         }
 
         data
@@ -71,12 +70,12 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_headers_single_test() {
+    fn to_string_headers_single_test() {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name".to_string(), "Header-Value".to_string());
         assert_eq!(
-            Vec::<u8>::from(Headers { headers }),
-            b"Header-Name: Header-Value".to_vec()
+            Headers { headers }.to_string(),
+            "Header-Name: Header-Value".to_string()
         );
     }
 
@@ -92,13 +91,13 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_headers_multiple_test() {
+    fn to_string_headers_multiple_test() {
         let mut headers = BTreeMap::new();
         headers.insert("Header-Name1".to_string(), "Header-Value1".to_string());
         headers.insert("Header-Name2".to_string(), "Header-Value2".to_string());
         assert_eq!(
-            Vec::<u8>::from(Headers { headers }),
-            b"Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2".to_vec()
+            Headers { headers }.to_string(),
+            "Header-Name1: Header-Value1\r\nHeader-Name2: Header-Value2".to_string(),
         );
     }
 

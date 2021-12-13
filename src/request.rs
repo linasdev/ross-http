@@ -1,9 +1,7 @@
 extern crate alloc;
 
 use alloc::string::{String, ToString};
-use alloc::vec;
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom, TryInto};
+use core::convert::{TryFrom, TryInto};
 
 use crate::error::HttpError;
 use crate::headers::Headers;
@@ -11,7 +9,7 @@ use crate::method::Method;
 use crate::uri::Uri;
 use crate::version::Version;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Request {
     pub method: Method,
     pub uri: Uri,
@@ -97,46 +95,44 @@ impl TryFrom<&str> for Request {
     }
 }
 
-impl From<Request> for Vec<u8> {
-    fn from(mut request: Request) -> Self {
-        let mut data = vec![];
+impl ToString for Request {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        let mut host_and_port = request.uri.authority.host;
+        let mut headers = self.headers.clone();
+        let mut host_and_port = self.uri.authority.host.clone();
 
-        if let Some(port) = request.uri.authority.port {
+        if let Some(port) = &self.uri.authority.port {
             host_and_port += ":";
             host_and_port += port.as_str();
         }
 
-        request
-            .headers
+        headers
             .headers
             .insert("Host".to_string(), host_and_port);
-        if request.body.len() > 0 {
-            request
+        if self.body.len() > 0 {
+            headers
                 .headers
-                .headers
-                .insert("Content-Length".to_string(), request.body.len().to_string());
+                .insert("Content-Length".to_string(), self.body.len().to_string());
         }
 
-        data.append(&mut request.method.into());
-        data.append(&mut b" ".to_vec());
-        if let Some(path) = request.uri.path {
-            data.append(&mut path.into());
+        data += self.method.to_string().as_str();
+        data += " ";
+        if let Some(path) = &self.uri.path {
+            data += path.to_string().as_str();
         } else {
-            data.append(&mut b"/".to_vec());
+            data += "/";
         }
-        if let Some(query) = request.uri.query {
-            data.append(&mut b"?".to_vec());
-            data.append(&mut query.into());
+        if let Some(query) = &self.uri.query {
+            data += "?";
+            data += query.to_string().as_str();
         }
-        data.append(&mut b" ".to_vec());
-        data.append(&mut request.version.into());
-        data.append(&mut b"\r\n".to_vec());
-        data.append(&mut request.headers.into());
-        data.append(&mut b"\r\n".to_vec());
-        data.append(&mut b"\r\n".to_vec());
-        data.append(&mut request.body.into());
+        data += " ";
+        data += self.version.to_string().as_str();
+        data += "\r\n";
+        data += headers.to_string().as_str();
+        data += "\r\n\r\n";
+        data += self.body.as_str();
 
         data
     }
@@ -189,7 +185,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_full_test() {
+    fn to_string_full_test() {
         let method = Method::Post;
         let uri = Uri {
             scheme: None,
@@ -210,15 +206,15 @@ mod tests {
         };
         let body = "Body".to_string();
         assert_eq!(
-            Vec::<u8>::from(Request {
+            Request {
                 method,
                 uri,
                 version,
                 headers,
                 body,
-            }),
-            b"POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"
-                .to_vec()
+            }.to_string(),
+            "POST /resource HTTP/1.1\r\nContent-Length: 4\r\nHost: example.com\r\n\r\nBody"
+                .to_string()
         );
     }
 
@@ -257,7 +253,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_body_test() {
+    fn to_string_no_body_test() {
         let method = Method::Post;
         let uri = Uri {
             scheme: None,
@@ -278,14 +274,14 @@ mod tests {
         };
         let body = "".to_string();
         assert_eq!(
-            Vec::<u8>::from(Request {
+            Request {
                 method,
                 uri,
                 version,
                 headers,
                 body,
-            }),
-            b"POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n".to_vec()
+            }.to_string(),
+            "POST /resource HTTP/1.1\r\nHost: example.com\r\n\r\n".to_string()
         );
     }
 

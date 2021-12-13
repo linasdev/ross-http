@@ -1,13 +1,11 @@
 extern crate alloc;
 
 use alloc::string::{String, ToString};
-use alloc::vec;
-use alloc::vec::Vec;
 use core::convert::{From, TryFrom, TryInto};
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum StatusCode {
     // 2xx
     Continue,
@@ -159,83 +157,83 @@ impl TryFrom<&str> for StatusCode {
     }
 }
 
-impl From<StatusCode> for Vec<u8> {
-    fn from(status_code: StatusCode) -> Self {
-        match status_code {
+impl ToString for StatusCode {
+    fn to_string(&self) -> String {
+        match self {
             // 1xx
-            StatusCode::Continue => b"100".to_vec(),
-            StatusCode::SwitchingProtocols => b"101".to_vec(),
-            StatusCode::Processing => b"102".to_vec(),
+            StatusCode::Continue => "100".to_string(),
+            StatusCode::SwitchingProtocols => "101".to_string(),
+            StatusCode::Processing => "102".to_string(),
 
             // 2xx
-            StatusCode::Ok => b"200".to_vec(),
-            StatusCode::Created => b"201".to_vec(),
-            StatusCode::Accepted => b"202".to_vec(),
-            StatusCode::NonAuthoritativeInformation => b"203".to_vec(),
-            StatusCode::NoContent => b"204".to_vec(),
-            StatusCode::ResetContent => b"205".to_vec(),
-            StatusCode::PartialContent => b"206".to_vec(),
-            StatusCode::MultiStatus => b"207".to_vec(),
-            StatusCode::AlreadyReported => b"208".to_vec(),
-            StatusCode::ImUsed => b"226".to_vec(),
+            StatusCode::Ok => "200".to_string(),
+            StatusCode::Created => "201".to_string(),
+            StatusCode::Accepted => "202".to_string(),
+            StatusCode::NonAuthoritativeInformation => "203".to_string(),
+            StatusCode::NoContent => "204".to_string(),
+            StatusCode::ResetContent => "205".to_string(),
+            StatusCode::PartialContent => "206".to_string(),
+            StatusCode::MultiStatus => "207".to_string(),
+            StatusCode::AlreadyReported => "208".to_string(),
+            StatusCode::ImUsed => "226".to_string(),
 
             // 3xx
-            StatusCode::MultipleChoices => b"300".to_vec(),
-            StatusCode::MovedPermanently => b"301".to_vec(),
-            StatusCode::Found => b"302".to_vec(),
-            StatusCode::SeeOther => b"303".to_vec(),
-            StatusCode::NotModified => b"304".to_vec(),
-            StatusCode::UseProxy => b"305".to_vec(),
-            StatusCode::TemporaryRedirect => b"307".to_vec(),
-            StatusCode::PermanentRedirect => b"308".to_vec(),
+            StatusCode::MultipleChoices => "300".to_string(),
+            StatusCode::MovedPermanently => "301".to_string(),
+            StatusCode::Found => "302".to_string(),
+            StatusCode::SeeOther => "303".to_string(),
+            StatusCode::NotModified => "304".to_string(),
+            StatusCode::UseProxy => "305".to_string(),
+            StatusCode::TemporaryRedirect => "307".to_string(),
+            StatusCode::PermanentRedirect => "308".to_string(),
 
             // 4xx
-            StatusCode::BadRequest => b"400".to_vec(),
-            StatusCode::Unauthorized => b"401".to_vec(),
-            StatusCode::PaymentRequired => b"402".to_vec(),
-            StatusCode::Forbidden => b"403".to_vec(),
-            StatusCode::NotFound => b"404".to_vec(),
-            StatusCode::MethodNotAllowed => b"405".to_vec(),
-            StatusCode::NotAcceptable => b"406".to_vec(),
-            StatusCode::ProxyAuthenticationRequired => b"407".to_vec(),
-            StatusCode::RequestTimeout => b"408".to_vec(),
-            StatusCode::Conflict => b"409".to_vec(),
-            StatusCode::Gone => b"410".to_vec(),
-            StatusCode::LengthRequired => b"411".to_vec(),
-            StatusCode::PreconditionFailed => b"412".to_vec(),
-            StatusCode::PayloadTooLarge => b"413".to_vec(),
-            StatusCode::UriTooLong => b"414".to_vec(),
-            StatusCode::UnsupportedMediaType => b"415".to_vec(),
-            StatusCode::RangeNotSatisfiable => b"416".to_vec(),
-            StatusCode::ExpectationFailed => b"417".to_vec(),
-            StatusCode::ImATeapot => b"418".to_vec(),
-            StatusCode::MisdirectedRequest => b"412".to_vec(),
-            StatusCode::UnprocessableEntity => b"422".to_vec(),
-            StatusCode::Locked => b"423".to_vec(),
-            StatusCode::FailedDependency => b"424".to_vec(),
-            StatusCode::UpgradeRequired => b"426".to_vec(),
-            StatusCode::PreconditionRequired => b"428".to_vec(),
-            StatusCode::TooManyRequests => b"429".to_vec(),
-            StatusCode::RequestHeaderFieldsTooLarge => b"431".to_vec(),
-            StatusCode::UnavailableForLegalReasons => b"451".to_vec(),
+            StatusCode::BadRequest => "400".to_string(),
+            StatusCode::Unauthorized => "401".to_string(),
+            StatusCode::PaymentRequired => "402".to_string(),
+            StatusCode::Forbidden => "403".to_string(),
+            StatusCode::NotFound => "404".to_string(),
+            StatusCode::MethodNotAllowed => "405".to_string(),
+            StatusCode::NotAcceptable => "406".to_string(),
+            StatusCode::ProxyAuthenticationRequired => "407".to_string(),
+            StatusCode::RequestTimeout => "408".to_string(),
+            StatusCode::Conflict => "409".to_string(),
+            StatusCode::Gone => "410".to_string(),
+            StatusCode::LengthRequired => "411".to_string(),
+            StatusCode::PreconditionFailed => "412".to_string(),
+            StatusCode::PayloadTooLarge => "413".to_string(),
+            StatusCode::UriTooLong => "414".to_string(),
+            StatusCode::UnsupportedMediaType => "415".to_string(),
+            StatusCode::RangeNotSatisfiable => "416".to_string(),
+            StatusCode::ExpectationFailed => "417".to_string(),
+            StatusCode::ImATeapot => "418".to_string(),
+            StatusCode::MisdirectedRequest => "412".to_string(),
+            StatusCode::UnprocessableEntity => "422".to_string(),
+            StatusCode::Locked => "423".to_string(),
+            StatusCode::FailedDependency => "424".to_string(),
+            StatusCode::UpgradeRequired => "426".to_string(),
+            StatusCode::PreconditionRequired => "428".to_string(),
+            StatusCode::TooManyRequests => "429".to_string(),
+            StatusCode::RequestHeaderFieldsTooLarge => "431".to_string(),
+            StatusCode::UnavailableForLegalReasons => "451".to_string(),
 
             // 5xx
-            StatusCode::InternalServerError => b"500".to_vec(),
-            StatusCode::NotImplemented => b"501".to_vec(),
-            StatusCode::BadGateway => b"502".to_vec(),
-            StatusCode::ServiceUnavailable => b"503".to_vec(),
-            StatusCode::GatewayTimeout => b"504".to_vec(),
-            StatusCode::HttpVersionNotSupported => b"505".to_vec(),
-            StatusCode::VariantAlsoNegotiates => b"506".to_vec(),
-            StatusCode::InsufficientStorage => b"507".to_vec(),
-            StatusCode::LoopDetected => b"508".to_vec(),
-            StatusCode::NotExtended => b"510".to_vec(),
-            StatusCode::NetworkAuthenticationRequired => b"511".to_vec(),
+            StatusCode::InternalServerError => "500".to_string(),
+            StatusCode::NotImplemented => "501".to_string(),
+            StatusCode::BadGateway => "502".to_string(),
+            StatusCode::ServiceUnavailable => "503".to_string(),
+            StatusCode::GatewayTimeout => "504".to_string(),
+            StatusCode::HttpVersionNotSupported => "505".to_string(),
+            StatusCode::VariantAlsoNegotiates => "506".to_string(),
+            StatusCode::InsufficientStorage => "507".to_string(),
+            StatusCode::LoopDetected => "508".to_string(),
+            StatusCode::NotExtended => "510".to_string(),
+            StatusCode::NetworkAuthenticationRequired => "511".to_string(),
         }
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Status {
     pub code: StatusCode,
     pub reason: String,
@@ -353,13 +351,13 @@ impl TryFrom<&str> for Status {
     }
 }
 
-impl From<Status> for Vec<u8> {
-    fn from(status: Status) -> Self {
-        let mut data = vec![];
+impl ToString for Status {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        data.append(&mut status.code.into());
-        data.append(&mut b" ".to_vec());
-        data.append(&mut status.reason.as_bytes().to_vec());
+        data += self.code.to_string().as_str();
+        data += " ";
+        data += self.reason.as_str();
 
         data
     }
@@ -381,13 +379,13 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_status_code_ok_test() {
+    fn to_string_status_code_ok_test() {
         assert_eq!(
-            Vec::<u8>::from(Status {
+            Status {
                 code: StatusCode::Ok,
                 reason: "Ok".to_string(),
-            }),
-            b"200 Ok".to_vec(),
+            }.to_string(),
+            "200 Ok".to_string(),
         );
     }
 
@@ -403,13 +401,13 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_status_code_no_content_test() {
+    fn to_string_status_code_no_content_test() {
         assert_eq!(
-            Vec::<u8>::from(Status {
+            Status {
                 code: StatusCode::NoContent,
                 reason: "No Content".to_string(),
-            }),
-            b"204 No Content".to_vec(),
+            }.to_string(),
+            "204 No Content".to_string(),
         );
     }
 

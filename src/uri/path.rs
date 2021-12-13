@@ -1,12 +1,11 @@
 extern crate alloc;
 
 use alloc::string::{String, ToString};
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Path {
     pub src: String,
 }
@@ -21,9 +20,9 @@ impl TryFrom<&str> for Path {
     }
 }
 
-impl<'a> From<Path> for Vec<u8> {
-    fn from(path: Path) -> Self {
-        path.src.as_bytes().to_vec()
+impl ToString for Path {
+    fn to_string(&self) -> String {
+        self.src.clone()
     }
 }
 
@@ -42,12 +41,12 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_test() {
+    fn to_string_test() {
         assert_eq!(
-            Vec::<u8>::from(Path {
+            Path {
                 src: "/resource/subresource".to_string()
-            }),
-            b"/resource/subresource".to_vec()
+            }.to_string(),
+            "/resource/subresource".to_string()
         );
     }
 }

@@ -1,11 +1,11 @@
 extern crate alloc;
 
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use alloc::string::{String, ToString};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Method {
     Get,
     Post,
@@ -37,18 +37,18 @@ impl TryFrom<&str> for Method {
     }
 }
 
-impl From<Method> for Vec<u8> {
-    fn from(method: Method) -> Self {
-        match method {
-            Method::Get => b"GET".to_vec(),
-            Method::Post => b"POST".to_vec(),
-            Method::Put => b"PUT".to_vec(),
-            Method::Delete => b"DELETE".to_vec(),
-            Method::Head => b"HEAD".to_vec(),
-            Method::Options => b"OPTIONS".to_vec(),
-            Method::Connect => b"CONNECT".to_vec(),
-            Method::Patch => b"PATCH".to_vec(),
-            Method::Trace => b"TRACE".to_vec(),
+impl ToString for Method {
+    fn to_string(&self) -> String {
+        match self {
+            Method::Get => "GET".to_string(),
+            Method::Post => "POST".to_string(),
+            Method::Put => "PUT".to_string(),
+            Method::Delete => "DELETE".to_string(),
+            Method::Head => "HEAD".to_string(),
+            Method::Options => "OPTIONS".to_string(),
+            Method::Connect => "CONNECT".to_string(),
+            Method::Patch => "PATCH".to_string(),
+            Method::Trace => "TRACE".to_string(),
         }
     }
 }
@@ -63,8 +63,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_get_test() {
-        assert_eq!(Vec::<u8>::from(Method::Get), b"GET".to_vec());
+    fn to_string_get_test() {
+        assert_eq!(Method::Get.to_string(), "GET".to_string());
     }
 
     #[test]
@@ -73,8 +73,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_post_test() {
-        assert_eq!(Vec::<u8>::from(Method::Post), b"POST".to_vec());
+    fn to_string_post_test() {
+        assert_eq!(Method::Post.to_string(), "POST".to_string());
     }
 
     #[test]
@@ -83,8 +83,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_put_test() {
-        assert_eq!(Vec::<u8>::from(Method::Put), b"PUT".to_vec());
+    fn to_string_put_test() {
+        assert_eq!(Method::Put.to_string(), "PUT".to_string());
     }
 
     #[test]
@@ -93,8 +93,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_delete_test() {
-        assert_eq!(Vec::<u8>::from(Method::Delete), b"DELETE".to_vec());
+    fn to_string_delete_test() {
+        assert_eq!(Method::Delete.to_string(), "DELETE".to_string());
     }
 
     #[test]
@@ -103,8 +103,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_head_test() {
-        assert_eq!(Vec::<u8>::from(Method::Head), b"HEAD".to_vec());
+    fn to_string_head_test() {
+        assert_eq!(Method::Head.to_string(), "HEAD".to_string());
     }
 
     #[test]
@@ -113,8 +113,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_options_test() {
-        assert_eq!(Vec::<u8>::from(Method::Options), b"OPTIONS".to_vec());
+    fn to_string_options_test() {
+        assert_eq!(Method::Options.to_string(), "OPTIONS".to_string());
     }
 
     #[test]
@@ -123,8 +123,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_connect_test() {
-        assert_eq!(Vec::<u8>::from(Method::Connect), b"CONNECT".to_vec());
+    fn to_string_connect_test() {
+        assert_eq!(Method::Connect.to_string(), "CONNECT".to_string());
     }
 
     #[test]
@@ -133,8 +133,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_patch_test() {
-        assert_eq!(Vec::<u8>::from(Method::Patch), b"PATCH".to_vec());
+    fn to_string_patch_test() {
+        assert_eq!(Method::Patch.to_string(), "PATCH".to_string());
     }
 
     #[test]
@@ -143,8 +143,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_trace_test() {
-        assert_eq!(Vec::<u8>::from(Method::Trace), b"TRACE".to_vec());
+    fn to_string_trace_test() {
+        assert_eq!(Method::Trace.to_string(), "TRACE".to_string());
     }
 
     #[test]

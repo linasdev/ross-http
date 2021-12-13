@@ -1,11 +1,11 @@
 extern crate alloc;
 
-use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use alloc::string::{String, ToString};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Scheme {
     Http,
     Https,
@@ -23,11 +23,11 @@ impl TryFrom<&str> for Scheme {
     }
 }
 
-impl From<Scheme> for Vec<u8> {
-    fn from(scheme: Scheme) -> Self {
-        match scheme {
-            Scheme::Http => b"http".to_vec(),
-            Scheme::Https => b"https".to_vec(),
+impl ToString for Scheme {
+    fn to_string(&self) -> String {
+        match self {
+            Scheme::Http => "http".to_string(),
+            Scheme::Https => "https".to_string(),
         }
     }
 }
@@ -42,8 +42,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_http_test() {
-        assert_eq!(Vec::<u8>::from(Scheme::Http), b"http".to_vec());
+    fn to_string_http_test() {
+        assert_eq!(Scheme::Http.to_string(), "http".to_string());
     }
 
     #[test]
@@ -52,8 +52,8 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_https_test() {
-        assert_eq!(Vec::<u8>::from(Scheme::Https), b"https".to_vec());
+    fn to_string_https_test() {
+        assert_eq!(Scheme::Https.to_string(), "https".to_string());
     }
 
     #[test]

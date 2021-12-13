@@ -2,13 +2,12 @@ extern crate alloc;
 
 use alloc::collections::BTreeMap;
 use alloc::string::{String, ToString};
-use alloc::vec;
 use alloc::vec::Vec;
-use core::convert::{From, TryFrom};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Query {
     pub parameters: BTreeMap<String, String>,
 }
@@ -36,23 +35,23 @@ impl TryFrom<&str> for Query {
     }
 }
 
-impl From<Query> for Vec<u8> {
-    fn from(query: Query) -> Self {
-        let mut data = vec![];
+impl ToString for Query {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        let mut iterator = query.parameters.iter();
+        let mut iterator = self.parameters.iter();
 
         if let Some((parameter, value)) = iterator.next() {
-            data.append(&mut parameter.as_bytes().to_vec());
-            data.append(&mut b"=".to_vec());
-            data.append(&mut value.as_bytes().to_vec());
+            data += parameter;
+            data += "=";
+            data += value;
         }
 
         for (parameter, value) in iterator {
-            data.append(&mut b"&".to_vec());
-            data.append(&mut parameter.as_bytes().to_vec());
-            data.append(&mut b"=".to_vec());
-            data.append(&mut value.as_bytes().to_vec());
+            data += "&";
+            data += parameter;
+            data += "=";
+            data += value;
         }
 
         data
@@ -71,12 +70,12 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_single_test() {
+    fn to_string_single_test() {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter".to_string(), "value".to_string());
         assert_eq!(
-            Vec::<u8>::from(Query { parameters }),
-            b"parameter=value".to_vec()
+            Query { parameters }.to_string(),
+            "parameter=value".to_string()
         );
     }
 
@@ -92,13 +91,13 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_multiple_test() {
+    fn to_string_multiple_test() {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
         assert_eq!(
-            Vec::<u8>::from(Query { parameters }),
-            b"parameter1=value1&parameter2=value2".to_vec()
+            Query { parameters }.to_string(),
+            "parameter1=value1&parameter2=value2".to_string()
         );
     }
 }

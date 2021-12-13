@@ -1,9 +1,8 @@
 extern crate alloc;
 
-use alloc::vec;
-use alloc::vec::Vec;
+use alloc::string::{String, ToString};
 use core::convert::TryInto;
-use core::convert::{From, TryFrom};
+use core::convert::TryFrom;
 
 use crate::error::HttpError;
 use crate::uri::authority::Authority;
@@ -16,7 +15,7 @@ pub mod path;
 pub mod query;
 pub mod scheme;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Uri {
     pub scheme: Option<Scheme>,
     pub authority: Authority,
@@ -76,21 +75,21 @@ impl TryFrom<&str> for Uri {
     }
 }
 
-impl From<Uri> for Vec<u8> {
-    fn from(uri: Uri) -> Self {
-        let mut data = vec![];
+impl ToString for Uri {
+    fn to_string(&self) -> String {
+        let mut data = String::new();
 
-        if let Some(scheme) = uri.scheme {
-            data.append(&mut scheme.into());
-            data.append(&mut b"://".to_vec());
+        if let Some(scheme) = &self.scheme {
+            data += scheme.to_string().as_str();
+            data += "://";
         }
-        data.append(&mut uri.authority.into());
-        if let Some(path) = uri.path {
-            data.append(&mut path.into());
+        data += self.authority.to_string().as_str();
+        if let Some(path) = &self.path {
+            data += path.to_string().as_str();
         }
-        if let Some(query) = uri.query {
-            data.append(&mut b"?".to_vec());
-            data.append(&mut query.into());
+        if let Some(query) = &self.query {
+            data += "?";
+            data += query.to_string().as_str();
         }
 
         data
@@ -130,7 +129,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_full_test() {
+    fn to_string_full_test() {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
@@ -146,12 +145,12 @@ mod tests {
             src: "/resource/subresource".to_string(),
         });
         let query = Some(Query { parameters });
-        assert_eq!(Vec::<u8>::from(Uri {
+        assert_eq!(Uri {
             scheme,
             authority,
             path,
             query,
-        }), b"https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2".to_vec());
+        }.to_string(), "https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2".to_string());
     }
 
     #[test]
@@ -183,7 +182,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_path_test() {
+    fn to_string_no_path_test() {
         let mut parameters = BTreeMap::new();
         parameters.insert("parameter1".to_string(), "value1".to_string());
         parameters.insert("parameter2".to_string(), "value2".to_string());
@@ -198,14 +197,14 @@ mod tests {
         let path = None;
         let query = Some(Query { parameters });
         assert_eq!(
-            Vec::<u8>::from(Uri {
+            Uri {
                 scheme,
                 authority,
                 path,
                 query,
-            }),
-            b"https://username:password@example.com:123?parameter1=value1&parameter2=value2"
-                .to_vec()
+            }.to_string(),
+            "https://username:password@example.com:123?parameter1=value1&parameter2=value2"
+                .to_string()
         );
     }
 
@@ -232,7 +231,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_query_test() {
+    fn to_string_no_query_test() {
         let scheme = Some(Scheme::Https);
         let authority = Authority {
             username: Some("username".to_string()),
@@ -243,13 +242,13 @@ mod tests {
         let path = None;
         let query = None;
         assert_eq!(
-            Vec::<u8>::from(Uri {
+            Uri {
                 scheme,
                 authority,
                 path,
                 query,
-            }),
-            b"https://username:password@example.com:123".to_vec()
+            }.to_string(),
+            "https://username:password@example.com:123".to_string()
         );
     }
 
@@ -276,7 +275,7 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes_no_scheme_test() {
+    fn to_string_no_scheme_test() {
         let scheme = None;
         let authority = Authority {
             username: Some("username".to_string()),
@@ -287,13 +286,13 @@ mod tests {
         let path = None;
         let query = None;
         assert_eq!(
-            Vec::<u8>::from(Uri {
+            Uri {
                 scheme,
                 authority,
                 path,
                 query,
-            }),
-            b"username:password@example.com:123".to_vec()
+            }.to_string(),
+            "username:password@example.com:123".to_string()
         );
     }
 

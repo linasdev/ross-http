@@ -1,13 +1,13 @@
 extern crate alloc;
 
-use alloc::collections::BTreeMap;
 use alloc::boxed::Box;
+use alloc::collections::BTreeMap;
 use alloc::string::ToString;
 
 use crate::method::Method;
-use crate::uri::path::Path;
 use crate::request::Request;
 use crate::response::Response;
+use crate::uri::path::Path;
 
 type RequestHandler = Box<dyn FnMut(Request) -> Response>;
 
@@ -26,7 +26,7 @@ impl HttpRouter {
     pub fn new(not_found_handler: RequestHandler) -> Self {
         Self {
             routes: BTreeMap::new(),
-            not_found_handler
+            not_found_handler,
         }
     }
 
@@ -37,7 +37,9 @@ impl HttpRouter {
     pub fn handle_request(&mut self, request: Request) -> Response {
         let request_path = match &request.uri.path {
             Some(path) => path.clone(),
-            None => Path { src: "/".to_string() },
+            None => Path {
+                src: "/".to_string(),
+            },
         };
 
         for (route, handler) in self.routes.iter_mut() {

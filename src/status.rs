@@ -1,9 +1,9 @@
 extern crate alloc;
 
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::string::{String, ToString};
-use core::convert::{TryFrom, From, TryInto};
+use alloc::vec;
+use alloc::vec::Vec;
+use core::convert::{From, TryFrom, TryInto};
 
 use crate::error::HttpError;
 
@@ -159,7 +159,6 @@ impl TryFrom<&str> for StatusCode {
     }
 }
 
-
 impl From<StatusCode> for Vec<u8> {
     fn from(status_code: StatusCode) -> Self {
         match status_code {
@@ -254,7 +253,9 @@ impl From<StatusCode> for Status {
             StatusCode::Ok => (status_code, "Ok".to_string()),
             StatusCode::Created => (status_code, "Created".to_string()),
             StatusCode::Accepted => (status_code, "Accepted".to_string()),
-            StatusCode::NonAuthoritativeInformation => (status_code, "Non Authoritative Information".to_string()),
+            StatusCode::NonAuthoritativeInformation => {
+                (status_code, "Non Authoritative Information".to_string())
+            }
             StatusCode::NoContent => (status_code, "No Content".to_string()),
             StatusCode::ResetContent => (status_code, "Reset Content".to_string()),
             StatusCode::PartialContent => (status_code, "Partial Content".to_string()),
@@ -280,7 +281,9 @@ impl From<StatusCode> for Status {
             StatusCode::NotFound => (status_code, "Not Found".to_string()),
             StatusCode::MethodNotAllowed => (status_code, "Method Not Allowed".to_string()),
             StatusCode::NotAcceptable => (status_code, "Not Acceptable".to_string()),
-            StatusCode::ProxyAuthenticationRequired => (status_code, "Proxy Authentication Required".to_string()),
+            StatusCode::ProxyAuthenticationRequired => {
+                (status_code, "Proxy Authentication Required".to_string())
+            }
             StatusCode::RequestTimeout => (status_code, "Request Timeout".to_string()),
             StatusCode::Conflict => (status_code, "Conflict".to_string()),
             StatusCode::Gone => (status_code, "Gone".to_string()),
@@ -299,8 +302,12 @@ impl From<StatusCode> for Status {
             StatusCode::UpgradeRequired => (status_code, "Upgrade Required".to_string()),
             StatusCode::PreconditionRequired => (status_code, "Precondition Required".to_string()),
             StatusCode::TooManyRequests => (status_code, "Too Many Requests".to_string()),
-            StatusCode::RequestHeaderFieldsTooLarge => (status_code, "Request Header Fields Too Large".to_string()),
-            StatusCode::UnavailableForLegalReasons => (status_code, "Unavailable For Legal Reasons".to_string()),
+            StatusCode::RequestHeaderFieldsTooLarge => {
+                (status_code, "Request Header Fields Too Large".to_string())
+            }
+            StatusCode::UnavailableForLegalReasons => {
+                (status_code, "Unavailable For Legal Reasons".to_string())
+            }
 
             // 5xx
             StatusCode::InternalServerError => (status_code, "Internal Server Error".to_string()),
@@ -308,18 +315,21 @@ impl From<StatusCode> for Status {
             StatusCode::BadGateway => (status_code, "Bad Gateway".to_string()),
             StatusCode::ServiceUnavailable => (status_code, "Service Unavailable".to_string()),
             StatusCode::GatewayTimeout => (status_code, "Gateway Timeout".to_string()),
-            StatusCode::HttpVersionNotSupported => (status_code, "Http Version Not Supported".to_string()),
-            StatusCode::VariantAlsoNegotiates => (status_code, "Variant Also Negotiates".to_string()),
+            StatusCode::HttpVersionNotSupported => {
+                (status_code, "Http Version Not Supported".to_string())
+            }
+            StatusCode::VariantAlsoNegotiates => {
+                (status_code, "Variant Also Negotiates".to_string())
+            }
             StatusCode::InsufficientStorage => (status_code, "Insufficient Storage".to_string()),
             StatusCode::LoopDetected => (status_code, "Loop Detected".to_string()),
             StatusCode::NotExtended => (status_code, "Not Extended".to_string()),
-            StatusCode::NetworkAuthenticationRequired => (status_code, "Network Authentication Required".to_string()),
-        };    
-        
-        Self {
-            code,
-            reason,
-        }
+            StatusCode::NetworkAuthenticationRequired => {
+                (status_code, "Network Authentication Required".to_string())
+            }
+        };
+
+        Self { code, reason }
     }
 }
 
@@ -362,9 +372,7 @@ mod tests {
     #[test]
     fn from_str_status_code_ok_test() {
         assert_eq!(
-            Status::try_from(
-                "200 Ok"
-            ),
+            Status::try_from("200 Ok"),
             Ok(Status {
                 code: StatusCode::Ok,
                 reason: "Ok".to_string(),
@@ -386,9 +394,7 @@ mod tests {
     #[test]
     fn from_str_status_code_no_content_test() {
         assert_eq!(
-            Status::try_from(
-                "204 No Content"
-            ),
+            Status::try_from("204 No Content"),
             Ok(Status {
                 code: StatusCode::NoContent,
                 reason: "No Content".to_string(),

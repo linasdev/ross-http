@@ -1,14 +1,14 @@
 extern crate alloc;
 
+use alloc::collections::BTreeMap;
 use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
-use alloc::collections::BTreeMap;
 use core::convert::{From, TryFrom, TryInto};
 
 use crate::error::HttpError;
-use crate::status::Status;
 use crate::headers::Headers;
+use crate::status::Status;
 use crate::version::Version;
 
 #[derive(Debug, PartialEq)]
@@ -34,7 +34,7 @@ impl TryFrom<&str> for Response {
         };
 
         let skip_headers = src.find("\r\n") == src.find("\r\n\r\n");
-        
+
         let status = if let Some(index) = src.find("\r\n") {
             let status_split = src.split_at(index);
 
@@ -47,7 +47,9 @@ impl TryFrom<&str> for Response {
 
         let headers: Headers = if skip_headers {
             src = &src[2..];
-            Headers { headers: BTreeMap::new() }
+            Headers {
+                headers: BTreeMap::new(),
+            }
         } else {
             if let Some(index) = src.find("\r\n\r\n") {
                 let header_split = src.split_at(index);
@@ -91,10 +93,10 @@ impl From<Response> for Vec<u8> {
         let mut data = vec![];
 
         if response.body.len() > 0 {
-            response
-                .headers
-                .headers
-                .insert("Content-Length".to_string(), response.body.len().to_string());
+            response.headers.headers.insert(
+                "Content-Length".to_string(),
+                response.body.len().to_string(),
+            );
         }
 
         data.append(&mut response.version.into());
@@ -130,9 +132,7 @@ mod tests {
         let headers = Headers { headers };
         let body = "Body".to_string();
         assert_eq!(
-            Response::try_from(
-                "HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody"
-            ),
+            Response::try_from("HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody"),
             Ok(Response {
                 version,
                 status,
@@ -146,14 +146,16 @@ mod tests {
     fn to_bytes_full_test() {
         let version = Version::Http11;
         let status = Status::from(StatusCode::Ok);
-        let headers = Headers { headers: BTreeMap::new() };
+        let headers = Headers {
+            headers: BTreeMap::new(),
+        };
         let body = "Body".to_string();
         assert_eq!(
             Vec::<u8>::from(Response {
-                    version,
-                    status,
-                    headers,
-                    body,
+                version,
+                status,
+                headers,
+                body,
             }),
             b"HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody".to_vec()
         );
@@ -163,12 +165,12 @@ mod tests {
     fn from_str_no_body_test() {
         let version = Version::Http11;
         let status = Status::from(StatusCode::Ok);
-        let headers = Headers { headers: BTreeMap::new() };
+        let headers = Headers {
+            headers: BTreeMap::new(),
+        };
         let body = "".to_string();
         assert_eq!(
-            Response::try_from(
-                "HTTP/1.1 200 Ok\r\n\r\n"
-            ),
+            Response::try_from("HTTP/1.1 200 Ok\r\n\r\n"),
             Ok(Response {
                 version,
                 status,
@@ -182,14 +184,16 @@ mod tests {
     fn to_bytes_no_body_test() {
         let version = Version::Http11;
         let status = Status::from(StatusCode::Ok);
-        let headers = Headers { headers: BTreeMap::new() };
+        let headers = Headers {
+            headers: BTreeMap::new(),
+        };
         let body = "".to_string();
         assert_eq!(
             Vec::<u8>::from(Response {
-                    version,
-                    status,
-                    headers,
-                    body,
+                version,
+                status,
+                headers,
+                body,
             }),
             b"HTTP/1.1 200 Ok\r\n\r\n".to_vec(),
         );
@@ -198,9 +202,7 @@ mod tests {
     #[test]
     fn from_str_invalid_request1_test() {
         assert_eq!(
-            Response::try_from(
-                "HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody "
-            ),
+            Response::try_from("HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBody "),
             Err(HttpError::InvalidResponse)
         );
     }
@@ -208,9 +210,7 @@ mod tests {
     #[test]
     fn from_str_exhausted1_test() {
         assert_eq!(
-            Response::try_from(
-                "HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBod"
-            ),
+            Response::try_from("HTTP/1.1 200 Ok\r\nContent-Length: 4\r\n\r\nBod"),
             Err(HttpError::Exhausted)
         );
     }

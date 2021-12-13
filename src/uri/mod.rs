@@ -102,6 +102,7 @@ mod tests {
 
     use alloc::collections::BTreeMap;
     use alloc::string::ToString;
+    use alloc::vec;
 
     #[test]
     fn from_str_full_test() {
@@ -117,7 +118,7 @@ mod tests {
             port: Some("123".to_string()),
         };
         let path = Some(Path {
-            src: "/resource/subresource".to_string(),
+            segments: vec!["resource".to_string(), "subresource".to_string()],
         });
         let query = Some(Query { parameters });
         assert_eq!(Uri::try_from("https://username:password@example.com:123/resource/subresource?parameter1=value1&parameter2=value2"), Ok(Uri {
@@ -142,7 +143,7 @@ mod tests {
             port: Some("123".to_string()),
         };
         let path = Some(Path {
-            src: "/resource/subresource".to_string(),
+            segments: vec!["resource".to_string(), "subresource".to_string()],
         });
         let query = Some(Query { parameters });
         assert_eq!(Uri {

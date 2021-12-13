@@ -7,7 +7,3 @@ license-file = "LICENSE.md"
 description = "HTTP library for the Rusty Old Smart System"
 repository = "https://github.com/linasdev/ross-http"
 readme = "README.md"
-
-[dependencies.regex-automata]
-version = "0.1.10"
-default-features = false

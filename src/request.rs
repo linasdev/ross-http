@@ -141,6 +141,7 @@ mod tests {
     use super::*;
 
     use alloc::collections::BTreeMap;
+    use alloc::vec;
 
     use crate::uri::authority::Authority;
     use crate::uri::path::Path;
@@ -161,7 +162,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string(),
+                segments: vec!["resource".to_string()],
             }),
             query: None,
         };
@@ -194,7 +195,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string(),
+                segments: vec!["resource".to_string()],
             }),
             query: None,
         };
@@ -232,7 +233,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string(),
+                segments: vec!["resource".to_string()],
             }),
             query: None,
         };
@@ -263,7 +264,7 @@ mod tests {
                 port: None,
             },
             path: Some(Path {
-                src: "/resource".to_string(),
+                segments: vec!["resource".to_string()],
             }),
             query: None,
         };

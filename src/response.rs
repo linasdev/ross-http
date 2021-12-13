@@ -9,7 +9,7 @@ use crate::headers::Headers;
 use crate::status::Status;
 use crate::version::Version;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Response {
     pub version: Version,
     pub status: Status,

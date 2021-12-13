@@ -5,7 +5,7 @@ use core::convert::{From, TryFrom, TryInto};
 
 use crate::error::HttpError;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum StatusCode {
     // 2xx
     Continue,
@@ -233,7 +233,7 @@ impl ToString for StatusCode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Status {
     pub code: StatusCode,
     pub reason: String,

@@ -9,7 +9,7 @@ use crate::method::Method;
 use crate::uri::Uri;
 use crate::version::Version;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Request {
     pub method: Method,
     pub uri: Uri,

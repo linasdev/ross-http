@@ -8,3 +8,4 @@ pub mod response;
 pub mod status;
 pub mod uri;
 pub mod version;
+pub mod router;

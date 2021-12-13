@@ -43,17 +43,15 @@ impl HttpRouter {
 
         for (route, handler) in self.routes.iter_mut() {
             if route.method == request.method {
+                if route.path.segments.len() != request_path.segments.len() {
+                    continue;
+                }
+
                 let mut variables = vec![];
                 let mut matched = true;
 
                 for (i, route_segment) in route.path.segments.iter().enumerate() {
-                    let request_segment = match request_path.segments.iter().nth(i) {
-                        Some(segment) => segment,
-                        None => {
-                            matched = false;
-                            break;
-                        }
-                    };
+                    let request_segment = request_path.segments.iter().nth(i).unwrap();
 
                     if *route_segment == "{}".to_string() {
                         variables.push(request_segment.clone());

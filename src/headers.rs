@@ -7,7 +7,7 @@ use core::convert::TryFrom;
 
 use crate::error::HttpError;
 
-#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Headers {
     pub headers: BTreeMap<String, String>,
 }

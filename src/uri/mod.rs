@@ -15,7 +15,7 @@ pub mod path;
 pub mod query;
 pub mod scheme;
 
-#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Uri {
     pub scheme: Option<Scheme>,
     pub authority: Authority,

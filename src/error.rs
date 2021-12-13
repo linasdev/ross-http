@@ -8,6 +8,7 @@ pub enum HttpError {
     InvalidQuery,
     InvalidVersion,
     InvalidHeader,
+    InvalidResponse,
     InvalidStatus,
     Exhausted,
 }
